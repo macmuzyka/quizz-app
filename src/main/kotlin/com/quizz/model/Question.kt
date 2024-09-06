@@ -6,6 +6,7 @@ import jakarta.persistence.*
 data class Question(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
+    @Column(unique = true)
     var text: String = "",
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "question_id")

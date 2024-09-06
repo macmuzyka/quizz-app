@@ -1,6 +1,7 @@
 WITH inserted_question AS (
     INSERT INTO question (text, stage)
         VALUES ('Neutral color?', 1)
+        ON CONFLICT (text) DO NOTHING
         RETURNING id)
 INSERT
 INTO answer (text, points, question_id)
@@ -12,6 +13,7 @@ VALUES ('Grey', 25, (SELECT id FROM inserted_question)),
 WITH inserted_question AS (
     INSERT INTO question (text, stage)
         VALUES ('Dark color?', 1)
+        ON CONFLICT (text) DO NOTHING
         RETURNING id)
 INSERT
 INTO answer (text, points, question_id)
@@ -25,6 +27,7 @@ VALUES ('Black', 25, (SELECT id FROM inserted_question)),
 WITH inserted_question AS (
     INSERT INTO question (text, stage)
         VALUES ('Bright color?', 1)
+        ON CONFLICT (text) DO NOTHING
         RETURNING id)
 INSERT
 INTO answer (text, points, question_id)
@@ -35,6 +38,7 @@ VALUES ('Yellow', 25, (SELECT id FROM inserted_question)),
 WITH inserted_question AS (
     INSERT INTO question (text, stage)
         VALUES ('Name something that might be a day old?', 1)
+        ON CONFLICT (text) DO NOTHING
         RETURNING id)
 INSERT
 INTO answer (text, points, question_id)
@@ -46,6 +50,7 @@ VALUES ('Foood', 25, (SELECT id FROM inserted_question)),
 WITH inserted_question AS (
     INSERT INTO question (text, stage)
         VALUES ('Name a profession that involves getting wet?', 1)
+        ON CONFLICT (text) DO NOTHING
         RETURNING id)
 INSERT
 INTO answer (text, points, question_id)
@@ -57,6 +62,7 @@ VALUES ('Diver/swimmer', 50, (SELECT id FROM inserted_question)),
 WITH inserted_question AS (
     INSERT INTO question (text, stage)
         VALUES ('Name a place that always has a long bathroom line?', 1)
+        ON CONFLICT (text) DO NOTHING
         RETURNING id)
 INSERT
 INTO answer (text, points, question_id)
@@ -71,6 +77,7 @@ VALUES ('Sports venue', 28, (SELECT id FROM inserted_question)),
 WITH inserted_question AS (
     INSERT INTO question (text, stage)
         VALUES ('What is a common fear that many people have?', 1)
+        ON CONFLICT (text) DO NOTHING
         RETURNING id)
 INSERT
 INTO answer (text, points, question_id)
@@ -81,6 +88,32 @@ VALUES ('Heights', 50, (SELECT id FROM inserted_question)),
        ('Death', 8, (SELECT id FROM inserted_question)),
        ('Restaurant', 5, (SELECT id FROM inserted_question)),
        ('Every ladies'' room', 4, (SELECT id FROM inserted_question));
+
+WITH inserted_question AS (
+    INSERT INTO question (text, stage)
+        VALUES ('Name a musical instrument people strum?', 1)
+        ON CONFLICT (text) DO NOTHING
+        RETURNING id)
+INSERT
+INTO answer (text, points, question_id)
+VALUES ('Guitar', 69, (SELECT id FROM inserted_question)),
+       ('Banjo', 21, (SELECT id FROM inserted_question)),
+       ('Ukulele', 4, (SELECT id FROM inserted_question)),
+       ('Harp', 2, (SELECT id FROM inserted_question));
+
+WITH inserted_question AS (
+    INSERT INTO question (text, stage)
+        VALUES ('Name something people try to squeeze into?', 1)
+        ON CONFLICT (text) DO NOTHING
+        RETURNING id)
+INSERT
+INTO answer (text, points, question_id)
+VALUES ('Tight clothes/shoes', 84, (SELECT id FROM inserted_question)),
+       ('Parking spot', 3, (SELECT id FROM inserted_question)),
+       ('Crowded bus', 2, (SELECT id FROM inserted_question)),
+       ('Dining booth', 2, (SELECT id FROM inserted_question));
+
+DELETE FROM answer WHERE question_id IS NULL;
 
 
 

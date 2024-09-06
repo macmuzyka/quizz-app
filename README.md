@@ -5,3 +5,5 @@
 or
 
 #### Launch application in devel profile, so in memory db is populated with example data
+
+### Launch page http://localhost:8082/

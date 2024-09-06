@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Quiz Form</title>
+    <link rel="stylesheet" href="css/styles.css">
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
+    <style>
+        body { font-family: Arial, sans-serif; padding: 50px; }
+        form { margin: 20px; }
+    </style>
+</head>
+<body>
+<form id="quizForm">
+    <div class="question-container">
+        <label for="question">Question:</label>
+        <input type="text" id="question" name="text" required="required">
+    </div>
+    <div id="answerContainer" class="answer-container">
+        <div class="answer-option">
+            <input type="text" name="answer1" placeholder="Answer 1" required>
+            <input type="number" name="points1" placeholder="Points" min="0" required>
+        </div>
+        <div class="answer-option">
+            <input type="text" name="answer2" placeholder="Answer 2" required>
+            <input type="number" name="points2" placeholder="Points" min="0" required>
+        </div>
+        <div class="answer-option">
+            <input type="text" name="answer3" placeholder="Answer 3" required>
+            <input type="number" name="points3" placeholder="Points" min="0" required>
+        </div>
+    </div>
+    <button type="button" class="" onclick="addAnswerField()">Add Answer</button>
+    <button type="button" onclick="submitForm()">Submit</button>
+    <button type="button" onclick="redirectToOtherPage()">Main page</button> <!-- Add the redirection button -->
+    <div id="formError" class="error"></div>
+</form>
+<div id="result"></div>
+
+<script>
+    let answerCount = 3;
+
+    function addAnswerField() {
+        answerCount++;
+        const answerContainer = document.getElementById('answerContainer');
+        const newAnswerDiv = document.createElement('div');
+        newAnswerDiv.className = 'answer-option';
+        newAnswerDiv.innerHTML = `
+                <input type="text" name="answer${answerCount}" placeholder="Answer ${answerCount}" required>
+                <input type="number" name="points${answerCount}" placeholder="Points" min="0" required>
+            `;
+        answerContainer.appendChild(newAnswerDiv);
+    }
+
+    async function submitForm() {
+        const questionText = document.getElementById('question').value;
+        const answers = [];
+        const answerInputs = document.querySelectorAll('input[name^="answer"]');
+        const pointsInputs = document.querySelectorAll('input[name^="points"]');
+
+        answerInputs.forEach((input, index) => {
+            const answerText = input.value;
+            const points = pointsInputs[index]?.value;
+            if (answerText && points) {
+                answers.push({
+                    text: answerText,
+                    points: parseInt(points, 10)
+                });
+            }
+        });
+
+        if (answers.length < 3) {
+            document.getElementById('formError').innerText = 'You must provide at least 3 answers.';
+            return;
+        }
+
+        document.getElementById('formError').innerText = ''; // Clear any previous error
+
+        const formData = {
+            text: questionText,
+            answers: answers
+        };
+
+        console.log('Form Data:', formData);  // Log the form data to ensure it's correct
+        console.log(JSON.stringify(formData));
+
+        try {
+            const response = await fetch('http://localhost:8082/questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const result = await response.text();
+            displayResult(result);
+            // Refresh the page after successful submission
+
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
+    }
+
+    function redirectToOtherPage() {
+        window.location.href = 'index.html'; // Replace 'otherPage.html' with the URL of the target page
+    }
+
+    function displayResult(responseText) {
+        // Parse the JSON response
+        const responseJson = JSON.parse(responseText);
+
+        // Construct the HTML to display the result
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `
+        <div class="result-container">
+            <h3 class="result-title">Question Added</h3>
+            <p class="result-question">Question: ${responseJson.text}</p>
+            ${responseJson.answers.map((answer, index) => `
+                <p class="result-answer">Answer ${index + 1}: ${answer.text} - Points: ${answer.points}</p>
+            `).join('')}
+            <button class="refresh-button" onclick="refreshPage()">Refresh</button> <!-- Add the refresh button -->
+        </div>
+    `;
+    }
+
+    // function refreshPage() {
+    //     window.location.reload(); // Refresh the page
+    // }
+</script>
+<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>-->
+<!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>-->
+</body>
+</html>

@@ -1,7 +1,6 @@
 package com.quizz.model
 
 import jakarta.persistence.*
-import kotlin.random.Random
 
 @Entity
 data class Question(

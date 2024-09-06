@@ -2,13 +2,11 @@ package com.quizz.service
 
 import com.quizz.model.GameState
 import com.quizz.model.Question
-import com.quizz.repository.AnswerRepository
 import com.quizz.repository.GameStateRepository
 import com.quizz.repository.QuestionRepository
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import kotlin.random.Random
 
 
 @Service

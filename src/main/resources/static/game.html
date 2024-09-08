@@ -36,8 +36,9 @@
 
 
 <script>
-    const startGameEndpoint = 'http://localhost:8082/questions/start-game';
-    const saveGameStateEndpoint = 'http://localhost:8082/questions/save-current-state-of-the-game'
+    const startGameEndpoint = 'http://localhost:8082/quizz-game/questions/start-game';
+    const saveGameStateEndpoint = 'http://localhost:8082/quizz-game/questions/save-current-state-of-the-game'
+    const resetGameStateEndpoint = 'http://localhost:8082/quizz-game/questions/reset-auxiliary-map'
     let selectedAnswers = [];
 
     document.getElementById('add-points-red').addEventListener('click', function () {
@@ -60,6 +61,7 @@
         this.disabled = true
         nextStage();
     });
+
     function startGame() {
         clearLists()
         clearTeamPoints()
@@ -131,9 +133,10 @@
         alert(`${totalPoints} points assigned to ${teamId.replace('-points', '').replace('-', ' ')}.`);
 
         currentPoints = parseInt(teamPointsElement.textContent);
-        if (currentPoints >= 400) {
+        if (currentPoints > 250) {
             alert(`${teamId.replace('-points', '').replace('-', ' ')}`.toUpperCase() + ' WON!')
             setButtonsForEndgame()
+            saveCurrentGameState(false)
         } else {
             nextStageButtonClickable()
             bothTeamsPointsFrozen()
@@ -141,16 +144,7 @@
         selectedAnswers = [];
     }
 
-    function nextStage() {
-        clearLists()
-        let addPointsBlue = document.getElementById('add-points-blue');
-        addPointsBlue.classList.remove('unclickable');
-        addPointsBlue.classList.add('clickable');
-        addPointsBlue.textContent = '+'
-        let addPointsRed = document.getElementById('add-points-red');
-        addPointsRed.classList.remove('unclickable');
-        addPointsRed.classList.add('clickable');
-        addPointsRed.textContent = '+'
+    function saveCurrentGameState(gameOn) {
         const bluePoints = parseInt(document.getElementById('blue-team-points').textContent);
         const redPoints = parseInt(document.getElementById('red-team-points').textContent);
 
@@ -177,11 +171,47 @@
             })
             .then(data => {
                 console.log('Success:', data);
-                proceed2NextStage(redPoints, bluePoints)
+                if (gameOn) {
+                    proceed2NextStage(redPoints, bluePoints)
+                } else {
+                    noticeGameEnd()
+                }
+
             })
             .catch(error => {
                 console.error('Error:', error);
-            });
+            })
+    }
+
+    function nextStage() {
+        clearLists()
+        let addPointsBlue = document.getElementById('add-points-blue');
+        addPointsBlue.classList.remove('unclickable');
+        addPointsBlue.classList.add('clickable');
+        addPointsBlue.textContent = '+'
+        let addPointsRed = document.getElementById('add-points-red');
+        addPointsRed.classList.remove('unclickable');
+        addPointsRed.classList.add('clickable');
+        addPointsRed.textContent = '+'
+
+        saveCurrentGameState(true)
+    }
+
+    function noticeGameEnd() {
+        fetch(resetGameStateEndpoint, {
+                method: 'PATCH',
+                'Content-Type': 'application/json',
+            }
+        ).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok')
+            }
+            return response.json()
+        }).then(data => {
+            console.log('Success: ', data)
+        }).catch(error => {
+            console.error('Error:', error);
+        })
     }
 
     function proceed2NextStage(redPoints, bluePoints) {

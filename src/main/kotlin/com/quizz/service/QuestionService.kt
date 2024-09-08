@@ -16,6 +16,7 @@ class QuestionService(
 ) {
     private val log = LoggerFactory.getLogger(QuestionService::class.java)
     private val usedQuestions = mutableSetOf<Long>()
+    private var currentGameStateId: Long = 0
 
     @Transactional
     fun addQuestion(question: Question): Question {
@@ -44,8 +45,47 @@ class QuestionService(
             ?: throw IllegalArgumentException("Cannot find question with id $randomId")
     }
 
-    fun saveCurrentGame(game: GameState): Any {
+    fun saveCurrentGame(game: GameState): GameState {
         log.info("gameState passed from endpoint: {}", game)
-        return gameStateRepository.save(game)
+        log.info("current gameState id: {}", currentGameStateId)
+        if (currentGameStateId == 0L) {
+            log.info("creating new gameState entity")
+            val newGameState = gameStateRepository.save(game)
+            val currentGameId = newGameState.id
+            log.info("gameState id to set in class object: {}", currentGameId)
+            if (currentGameId != null) {
+                currentGameStateId = currentGameId
+                return newGameState
+            } else {
+                throw IllegalArgumentException("gameState Id was null even tough it should not!")
+            }
+        } else {
+            val sessionGameStateId = currentGameStateId
+            log.info("sessionGameStateId: {}", currentGameStateId)
+            val sessionGameState = gameStateRepository.findById(sessionGameStateId)
+            if (sessionGameState.isPresent) {
+                val obj = sessionGameState.get()
+                log.info("sessionGameState pre save: {}", obj)
+                obj.redPoints = game.redPoints
+                obj.bluePoints = game.bluePoints
+                val afterUpdate = gameStateRepository.save(obj)
+                log.info("after update: {}", afterUpdate)
+                return afterUpdate
+            } else {
+                throw IllegalArgumentException("Could not find gamestate based on id even though it should be there!")
+            }
+        }
+    }
+
+    fun resetAuxiliaryMap(): String {
+        usedQuestions.clear()
+        currentGameStateId = 0
+        return if (usedQuestions.isEmpty()) {
+            log.info("Auxiliary map cleared!")
+            return "OK"
+        } else {
+            log.info("Error clearing auxiliary map!")
+            "Auxiliary map was not cleared properly"
+        }
     }
 }

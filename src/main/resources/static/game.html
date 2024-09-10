@@ -16,6 +16,7 @@
         <span id="add-points-blue" class="clickable">+</span>
     </div>
     <button class="submit-btn" id="next-stage-btn" disabled>Next Stage</button>
+    <button class="submit-btn" id="stop-game" disabled>Stop game</button>
     <button class="submit-btn" id="start-game-btn" onclick="startGame()">Start game</button>
     <div class="team-container red-team">
         <span>Red Team</span>
@@ -62,6 +63,11 @@
         nextStage();
     });
 
+    document.getElementById('stop-game').addEventListener('click', function () {
+        noticeGameEnd()
+        window.location.href = 'index.html'
+    });
+
     function startGame() {
         clearLists()
         clearTeamPoints()
@@ -78,6 +84,8 @@
         startButton.disabled = true
         let auxiliaryListHeader = document.getElementById('auxiliary-list-h3')
         auxiliaryListHeader.style.display = 'block'
+        let stopButton = document.getElementById('stop-game')
+        stopButton.disabled = false
     }
 
     function displayQuestion(data) {
@@ -151,7 +159,6 @@
         const data = {
             redPoints: redPoints,
             bluePoints: bluePoints
-            // stage: 0 // Or increment based on your logic
         };
         console.log('stringify')
         console.log(JSON.stringify(data))

@@ -6,13 +6,16 @@ import com.quizz.repository.GameStateRepository
 import com.quizz.repository.QuestionRepository
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
+import org.springframework.mail.SimpleMailMessage
+import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 
 
 @Service
 class QuestionService(
     private val gameStateRepository: GameStateRepository,
-    private val questionRepository: QuestionRepository
+    private val questionRepository: QuestionRepository,
+    private val mailSender: JavaMailSender
 ) {
     private val log = LoggerFactory.getLogger(QuestionService::class.java)
     private val usedQuestions = mutableSetOf<Long>()
@@ -21,7 +24,10 @@ class QuestionService(
     @Transactional
     fun addQuestion(question: Question): Question {
         log.info("question :: {}", question)
-        return questionRepository.save(question)
+
+        val savedQuestion = questionRepository.save(question)
+        sendQuestionViaEmail(savedQuestion.prettyQuestion())
+        return savedQuestion
     }
 
     fun getQuestions(): List<Question> {
@@ -88,4 +94,14 @@ class QuestionService(
             "Auxiliary map was not cleared properly"
         }
     }
+    fun sendQuestionViaEmail(content: String) {
+        val destinationMail = "duke4a@gmail.com"
+        val subject = "New submitted Questions!"
+        val mail = SimpleMailMessage()
+        mail.setTo(destinationMail)
+        mail.subject = subject
+        mail.text = content
+        mailSender.send(mail)
+    }
+
 }

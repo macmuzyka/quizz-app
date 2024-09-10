@@ -12,7 +12,11 @@ data class Question(
     @JoinColumn(name = "question_id")
     var answers: List<Answer> = mutableListOf(),
     var stage: Int = resolveStage(answers.size)
-)
+) {
+    fun prettyQuestion(): String {
+        return text + "\n" + answers.map { a -> a.text + ": " + a.points }
+    }
+}
 
 fun resolveStage(size: Int): Int {
     return when {

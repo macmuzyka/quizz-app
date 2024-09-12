@@ -59,7 +59,7 @@ class QuestionController(
     fun resetAuxiliaryMap(): ResponseEntity<*> {
         return try {
             val mapResetResult = questionService.resetAuxiliaryMap()
-            return if (mapResetResult == "OK") {
+            return if (mapResetResult.message == "OK") {
                 ResponseEntity.status(HttpStatus.OK).body(mapResetResult)
             } else {
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mapResetResult)

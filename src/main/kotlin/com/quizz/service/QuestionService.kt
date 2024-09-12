@@ -1,6 +1,7 @@
 package com.quizz.service
 
 import com.quizz.model.GameState
+import com.quizz.model.Message
 import com.quizz.model.Question
 import com.quizz.repository.GameStateRepository
 import com.quizz.repository.QuestionRepository
@@ -83,15 +84,15 @@ class QuestionService(
         }
     }
 
-    fun resetAuxiliaryMap(): String {
+    fun resetAuxiliaryMap(): Message {
         usedQuestions.clear()
         currentGameStateId = 0
         return if (usedQuestions.isEmpty()) {
             log.info("Auxiliary map cleared!")
-            return "OK"
+            Message("OK")
         } else {
             log.info("Error clearing auxiliary map!")
-            "Auxiliary map was not cleared properly"
+            Message("Auxiliary map was not cleared properly")
         }
     }
     fun sendQuestionViaEmail(content: String) {

@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Question and Answers</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
     <script src="assets/auxiliary-scripts.js" defer></script>
 </head>
 <body>
-
+<audio id="sound-effect" src="sounds/sound.mp3" preload="auto"></audio>
 <div class="teams-container">
     <div class="team-container blue-team">
         <span>Blue Team</span>
@@ -149,6 +150,9 @@
             nextStageButtonClickable()
             bothTeamsPointsFrozen()
         }
+        var sound = document.getElementById('sound-effect')
+        console.log("playing sound!")
+        sound.play()
         selectedAnswers = [];
     }
 
